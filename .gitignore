@@ -1,0 +1,7 @@
+build
+code/egl/qgl.h
+*.d
+debian/files
+debian/ioquake3
+debian/ioquake3.substvars
+*-stamp
