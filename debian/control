@@ -7,7 +7,7 @@ Standards-Version: 3.8.1
 Homepage: http://ioquake3.org/
 
 Package: ioquake3
-Architecture: any
+Architecture: armel
 Depends: opengles-sgx-img-common, libgles1-sgx-img, xserver-xomap, ${shlibs:Depends}, ${misc:Depends}
 Description: Quake III Arena
  Welcome to the Arena, where high-ranking warriors are transformed into
