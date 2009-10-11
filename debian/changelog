@@ -1,3 +1,9 @@
+ioquake3 (1558-maemo4) unstable; urgency=low
+
+  * Base game must be "baseq3"
+
+ -- Oliver McFadden <oliver.mcfadden@nokia.com>  Sun, 11 Oct 2009 15:59:36 +0300
+
 ioquake3 (1558-maemo3) unstable; urgency=low
 
   * Architecture should be armel, as x86 is not supported.
