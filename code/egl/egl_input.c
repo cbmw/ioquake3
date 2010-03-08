@@ -473,9 +473,6 @@ static void Accelerometer_HandleEvents(void)
 	else if (y < -accel_epsilon_y->integer)
 		dy = -(y + accel_epsilon_y->integer);
 
-	dx *= cl_sensitivity->value;
-	dy *= cl_sensitivity->value;
-
 	Com_QueueEvent(t, SE_ACCEL, dx, dy, 0, NULL);
 }
 

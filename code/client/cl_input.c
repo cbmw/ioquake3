@@ -387,8 +387,8 @@ CL_AccelEvent
 void CL_AccelEvent(int dx, int dy, int time)
 {
 	if (!(Key_GetCatcher() & (KEYCATCH_UI | KEYCATCH_CGAME))) {
-		cl.accelDx[cl.accelIndex] += dx;
-		cl.accelDy[cl.accelIndex] += dy;
+		cl.accelDx[cl.accelIndex] += dx * cl_sensitivity->value;
+		cl.accelDy[cl.accelIndex] += dy * cl_sensitivity->value;
 	}
 }
 
