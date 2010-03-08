@@ -453,9 +453,7 @@ static void Accelerometer_HandleEvents(void)
 	if (accel_jump->value) {
 		float mag = sqrtf(y*y+z*z);
 		// HACK - change the sign of jump to be +ve not -ve
-		// HACK - z<0 means that lots of jerks will look like jumps
-		//        change it to < -500 or < accel_jump->value/2
-		int looks_like_a_jump = (mag > -accel_jump->value) && (z < 0);
+		int looks_like_a_jump = (mag > -accel_jump->value) && (z < accel_jump->value / 2.0f);
 		if (!jumpTime && looks_like_a_jump) {
 			Com_QueueEvent(t, SE_KEY, K_SPACE, qtrue, 0, NULL);
 			jumpTime = t;
