@@ -1,4 +1,5 @@
 build/release-linux-arm/baseq3/*.so	/home/user/baseq3
+build/release-linux-arm/baseq3/vm/*.qvm	/home/user/baseq3
 build/release-linux-arm/ioquake3.arm	/usr/bin
 misc/32x32/quake3.png	/usr/share/icons/hicolor/32x32/hildon
 misc/48x48/quake3.png	/usr/share/icons/hicolor/48x48/hildon
