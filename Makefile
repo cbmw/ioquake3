@@ -296,7 +296,7 @@ ifeq ($(PLATFORM),linux)
   endif
   ifeq ($(ARCH),arm)
     BASE_CFLAGS += -DNOKIA
-    OPTIMIZE += -mfpu=neon
+    OPTIMIZE += -ffast-math -march=armv7-a -mcpu=cortex-a8 -mfpu=neon #-mthumb
   endif
   endif
   endif
