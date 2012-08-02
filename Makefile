@@ -294,9 +294,9 @@ ifeq ($(PLATFORM),linux)
     OPTIMIZE += -mtune=ultrasparc3 -mv8plus
     HAVE_VM_COMPILED=true
   endif
-  ifeq ($(ARCH),arm)
+  ifeq ($(ARCH),armv7l)
     BASE_CFLAGS += -DNOKIA
-    OPTIMIZE += -ffast-math -march=armv7-a -mcpu=cortex-a8 -mfpu=neon #-mthumb
+    OPTIMIZE += -ffast-math -mcpu=cortex-a9 #-mthumb
   endif
   endif
   endif
@@ -313,7 +313,7 @@ ifeq ($(PLATFORM),linux)
   LIBS=-ldl -lm
 
   BASE_CFLAGS += -I/usr/include/EGL/ -I/usr/include/GLES/
-  CLIENT_LIBS=$(SDL_LIBS) -lGLES_CM -lX11
+  CLIENT_LIBS=$(SDL_LIBS) -lGLESv1_CM -lEGL -lX11
 
   ifeq ($(USE_OPENAL),1)
     ifneq ($(USE_OPENAL_DLOPEN),1)

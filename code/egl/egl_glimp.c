@@ -44,14 +44,17 @@ static char *GLimp_StringErrors[] = {
 	"EGL_CONTEXT_LOST",
 };
 
-static void GLimp_HandleError(void)
+
+static void GLimp_HandleError_f(const char* f, int l)
 {
 	GLint err = eglGetError();
 
-	fprintf(stderr, "%s: 0x%04x: %s\n", __func__, err,
+	fprintf(stderr, "%s:%d: 0x%04x: %s\n", f, l, err,
 		GLimp_StringErrors[err]);
 	assert(0);
 }
+
+#define GLimp_HandleError() GLimp_HandleError_f(__FUNCTION__, __LINE__)
 
 #define _NET_WM_STATE_REMOVE        0	/* remove/unset property */
 #define _NET_WM_STATE_ADD           1	/* add/set property */
@@ -86,6 +89,7 @@ static void GLimp_DisableComposition(void)
 
 
 #define MAX_NUM_CONFIGS 4
+
 
 /*
  * Create an RGB, double-buffered window.
@@ -150,7 +154,25 @@ static void make_window(Display * dpy, Screen * scr, EGLDisplay eglDisplay,
 			break;
 	}
 	if (eglSurface == EGL_NO_SURFACE)
+	{
+		// nvidia HACK
+		EGLint vid;
+		printf("HACK\n");
+		if (!eglChooseConfig( eglDisplay, cfg_attribs, &configs[0], 1, &config_count)) {
+			printf("Error: couldn't get an EGL visual config\n");
+			exit(1);
+		}
+		if (!eglGetConfigAttrib(eglDisplay, configs[0], EGL_NATIVE_VISUAL_ID, &vid)) {
+			printf("Error: eglGetConfigAttrib() failed\n");
+			exit(1);
+		}
+		eglSurface = eglCreateWindowSurface(eglDisplay,
+								configs[0], win, NULL);
+	}
+	if (eglSurface == EGL_NO_SURFACE)
 		GLimp_HandleError();
+
+	eglBindAPI(EGL_OPENGL_ES_API);
 
 	if ((eglContext =
 	     eglCreateContext(eglDisplay, configs[i], EGL_NO_CONTEXT,
@@ -370,12 +392,39 @@ void GLimp_Init(void)
 		printf("Error: couldn't open display \n");
 		assert(0);
 	}
+	ri.Printf(PRINT_ALL, "Default screen...\n");
 	screen = XDefaultScreenOfDisplay(dpy);
+
+	ri.Printf(PRINT_ALL, "Default visual...\n");
 	vis = DefaultVisual(dpy, DefaultScreen(dpy));
 
+	ri.Printf(PRINT_ALL, "egl get display...\n");
 	eglDisplay = eglGetDisplay((NativeDisplayType) dpy);
+	ri.Printf(PRINT_ALL, "egl initialize...\n");
 	if (!eglInitialize(eglDisplay, &major, &minor))
+	{
+		printf("Error: couldn't init egl \n");
 		GLimp_HandleError();
+	}
+	else
+	{
+		Q_strncpyz(glConfig.vendor_string,
+				(const char *)qglGetString(GL_VENDOR),
+				sizeof(glConfig.vendor_string));
+		Q_strncpyz(glConfig.renderer_string,
+				(const char *)qglGetString(GL_RENDERER),
+				sizeof(glConfig.renderer_string));
+		Q_strncpyz(glConfig.version_string,
+				(const char *)qglGetString(GL_VERSION),
+				sizeof(glConfig.version_string));
+		Q_strncpyz(glConfig.extensions_string,
+				(const char *)qglGetString(GL_EXTENSIONS),
+				sizeof(glConfig.extensions_string));
+		printf("GL_RENDERER   = %s\n", (char *) qglGetString(GL_RENDERER));
+		printf("GL_VERSION    = %s\n", (char *) qglGetString(GL_VERSION));
+		printf("GL_VENDOR     = %s\n", (char *) qglGetString(GL_VENDOR));
+		printf("GL_EXTENSIONS = %s\n", (char *) qglGetString(GL_EXTENSIONS));
+	}
 
 	make_window(dpy, screen, eglDisplay, &eglSurface, &eglContext);
 
@@ -396,18 +445,6 @@ void GLimp_Init(void)
 	glConfig.driverType = GLDRV_ICD;
 	glConfig.hardwareType = GLHW_GENERIC;
 
-	Q_strncpyz(glConfig.vendor_string,
-		   (const char *)qglGetString(GL_VENDOR),
-		   sizeof(glConfig.vendor_string));
-	Q_strncpyz(glConfig.renderer_string,
-		   (const char *)qglGetString(GL_RENDERER),
-		   sizeof(glConfig.renderer_string));
-	Q_strncpyz(glConfig.version_string,
-		   (const char *)qglGetString(GL_VERSION),
-		   sizeof(glConfig.version_string));
-	Q_strncpyz(glConfig.extensions_string,
-		   (const char *)qglGetString(GL_EXTENSIONS),
-		   sizeof(glConfig.extensions_string));
 
 	qglLockArraysEXT = qglLockArrays;
 	qglUnlockArraysEXT = qglUnlockArrays;
